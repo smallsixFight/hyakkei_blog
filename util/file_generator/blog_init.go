@@ -20,7 +20,7 @@ var (
 
 func GenerateBlogFile() error {
 	if err := util.CopyDir(filepath.Join(util.GetBlogTemplatePath(), "assets"),
-		filepath.Join(util.GetSysConfig().SavePath, "hyakkei")); err != nil {
+		filepath.Join(service.GetSysConfig().SavePath, "hyakkei")); err != nil {
 		return err
 	}
 	// 生成前端页面
@@ -55,7 +55,7 @@ func GenerateBlogFile() error {
 	}
 	posts = make([]model.Post, 0)
 	_ = json.Unmarshal(d, &posts)
-	savePath := filepath.Join(util.GetSysConfig().SavePath, "hyakkei", "custom_page")
+	savePath := filepath.Join(service.GetSysConfig().SavePath, "hyakkei", "custom_page")
 	if !util.FileIsExist(savePath) {
 		if err := os.MkdirAll(savePath, os.ModePerm); err != nil {
 			return err
@@ -67,7 +67,7 @@ func GenerateBlogFile() error {
 		}
 	}
 	// 生成后台管理页面
-	savePath = filepath.Join(util.GetSysConfig().SavePath, "hyakkei", "bs")
+	savePath = filepath.Join(service.GetSysConfig().SavePath, "hyakkei", "bs")
 	if !util.FileIsExist(savePath) {
 		if err := os.MkdirAll(savePath, os.ModePerm); err != nil {
 			return err
@@ -78,7 +78,7 @@ func GenerateBlogFile() error {
 		if err != nil {
 			return fmt.Errorf("读取 %s 模版文件数据失败: %s", BlogBsFileList[i], err.Error())
 		}
-		str := util.ReplaceBasePath(template)
+		str := ReplaceBasePath(template)
 		if err := util.WriteFile([]byte(str), filepath.Join(savePath, BlogBsFileList[i])); err != nil {
 			return err
 		}
@@ -86,7 +86,7 @@ func GenerateBlogFile() error {
 	return nil
 }
 
-func GenerateBlogConfig(sysCfg *util.SysSetting) error {
+func GenerateBlogConfig(sysCfg *model.SysSetting) error {
 	if err := util.SaveInitConfig(&util.InitConfig{
 		JsPath:   "assets/js",
 		ImgPath:  "assets/img",
@@ -95,7 +95,7 @@ func GenerateBlogConfig(sysCfg *util.SysSetting) error {
 	}); err != nil {
 		return err
 	}
-	return util.InitSysConfig(sysCfg)
+	return service.GenerateSysSetting(sysCfg)
 }
 
 func GenerateDataFile(arr []string) error {

@@ -124,18 +124,6 @@ func GetId() int64 {
 	return id
 }
 
-func ReplaceBasePath(d []byte) string {
-	str := string(d)
-	str = strings.ReplaceAll(str, "#{{img_path}}", GetInitConfig().ImgPath)
-	str = strings.ReplaceAll(str, "#{{js_path}}", GetInitConfig().JsPath)
-	str = strings.ReplaceAll(str, "#{{css_path}}", GetInitConfig().CssPath)
-	str = strings.ReplaceAll(str, "#{{font_path}}", GetInitConfig().FontPath)
-	str = strings.Replace(str, "#{{github_name}}", GetSysConfig().GithubName, 1)
-	str = strings.Replace(str, "#{{blog_name}}", GetSysConfig().BlogName, 1)
-	str = strings.Replace(str, "#{{pswp}}", pswpStr, 1)
-	return str
-}
-
 // 生成文件并写入数据
 func WriteFile(data []byte, path string) error {
 	file, err := os.Create(path)
@@ -148,49 +136,3 @@ func WriteFile(data []byte, path string) error {
 	}
 	return nil
 }
-
-const pswpStr = `<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-        <!-- Background of PhotoSwipe.
-         It's a separate element as animating opacity is faster than rgba(). -->
-        <div class="pswp__bg"></div>
-        <div class="pswp__scroll-wrap">
-            <div class="pswp__container">
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-                <div class="pswp__item"></div>
-            </div>
-            <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
-            <div class="pswp__ui pswp__ui--hidden">
-                <div class="pswp__top-bar">
-                    <div class="pswp__counter"></div>
-                    <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-                    <!-- <button class="pswp__button pswp__button--share" title="Share"></button> -->
-                    <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-                    <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-                    <!-- Preloader demo https://codepen.io/dimsemenov/pen/yyBWoR -->
-                    <!-- element will get class pswp__preloader--active when preloader is running -->
-                    <div class="pswp__preloader">
-                        <div class="pswp__preloader__icn">
-                            <div class="pswp__preloader__cut">
-                                <div class="pswp__preloader__donut"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                    <div class="pswp__share-tooltip"></div>
-                </div>
-
-                <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-                </button>
-
-                <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-                </button>
-
-                <div class="pswp__caption">
-                    <div class="pswp__caption__center"></div>
-                </div>
-            </div>
-        </div>
-    </div>`

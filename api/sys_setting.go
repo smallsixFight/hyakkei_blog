@@ -4,14 +4,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/smallsixFight/hyakkei_blog/logger"
 	"github.com/smallsixFight/hyakkei_blog/model"
-	"github.com/smallsixFight/hyakkei_blog/util"
+	"github.com/smallsixFight/hyakkei_blog/service"
+	"github.com/smallsixFight/hyakkei_blog/util/file_generator"
 	"net/http"
 )
 
 func GetSysSettingInfo(ctx *gin.Context) {
 	reply := model.Reply{}
 	defer ctx.JSON(http.StatusOK, &reply)
-	cfg := util.GetSysConfig()
+	cfg := service.GetSysConfig()
 	cfg.Password = ""
 	cfg.Salt = ""
 	reply.SetSuccess(true).SetData(&cfg).SetMessage("ok")
@@ -26,7 +27,11 @@ func UpdateSysSettingInfo(ctx *gin.Context) {
 		reply.SetMessage("提交参数错误: " + err.Error())
 		return
 	}
-	if err := util.SaveSysConfig(&util.SysSetting{BaseSysSetting: cfg}); err != nil {
+	if err := service.SaveSysConfig(&model.SysSetting{BaseSysSetting: cfg}); err != nil {
+		reply.SetMessage(err.Error())
+		return
+	}
+	if err := file_generator.GenerateHeaderFile(); err != nil {
 		reply.SetMessage(err.Error())
 		return
 	}

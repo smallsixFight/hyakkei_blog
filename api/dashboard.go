@@ -12,7 +12,7 @@ import (
 func GetDashboardInfo(ctx *gin.Context) {
 	reply := model.Reply{}
 	defer ctx.JSON(http.StatusOK, &reply)
-	info := &model.Dashboard{InitTime: util.GetSysConfig().InitTime}
+	info := &model.Dashboard{InitTime: service.GetSysConfig().InitTime}
 
 	articles := make([]model.Post, 0)
 	pages := make([]model.Post, 0)

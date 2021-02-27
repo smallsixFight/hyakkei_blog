@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/smallsixFight/hyakkei_blog/logger"
 	"github.com/smallsixFight/hyakkei_blog/model"
+	"github.com/smallsixFight/hyakkei_blog/service"
 	"github.com/smallsixFight/hyakkei_blog/util"
 	"github.com/smallsixFight/hyakkei_blog/util/file_generator"
 	"net/http"
@@ -44,7 +45,7 @@ func UploadAttachment(ctx *gin.Context) {
 		reply.SetMessage("文件过大，无法上传")
 		return
 	}
-	saveDir := filepath.Join(util.GetSysConfig().SavePath, "hyakkei", getSavePath(ft))
+	saveDir := filepath.Join(service.GetSysConfig().SavePath, "hyakkei", getSavePath(ft))
 	if !util.FileIsExist(saveDir) {
 		if err := os.MkdirAll(saveDir, os.ModePerm); err != nil {
 			reply.SetMessage("存储目录创建失败: " + err.Error())
@@ -60,7 +61,7 @@ func UploadAttachment(ctx *gin.Context) {
 		return
 	}
 	// 如果是 logo，更新文件信息，重新生成 header 文件
-	cfg := util.GetSysConfig()
+	cfg := service.GetSysConfig()
 	if ft == "logo" && cfg.LogoName != file.Filename {
 		cfg.LogoName = file.Filename
 		go saveFilenameAndGenerateHeader(&cfg)
@@ -68,8 +69,8 @@ func UploadAttachment(ctx *gin.Context) {
 	reply.SetSuccess(true).SetMessage("上传成功")
 }
 
-func saveFilenameAndGenerateHeader(cfg *util.SysSetting) {
-	if err := util.SaveSysConfig(cfg); err != nil {
+func saveFilenameAndGenerateHeader(cfg *model.SysSetting) {
+	if err := service.SaveSysConfig(cfg); err != nil {
 		logger.Warn("更新附件配置失败，", err.Error())
 	} else if err = file_generator.GenerateHeaderFile(); err != nil {
 		logger.Warn("重新生成 header 文件失败，", err.Error())

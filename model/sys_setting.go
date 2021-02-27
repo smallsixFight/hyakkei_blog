@@ -9,3 +9,10 @@ type BaseSysSetting struct {
 	IsShowBook   bool   `json:"is_show_book"`
 	SavePath     string `json:"save_path"`
 }
+
+type SysSetting struct {
+	BaseSysSetting
+	LogoName string `json:"logo_name"`
+	InitTime int64  `json:"init_time"`
+	Salt     string `json:"salt,omitempty"`
+}

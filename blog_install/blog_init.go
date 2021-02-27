@@ -84,7 +84,7 @@ func IsNeedInstall() bool {
 	log.Println("正在检查配置文件是否缺失...")
 	// 检查配置文件是否创建
 	if !util.FileIsExist(filepath.Join(util.GetBlogConfigPath(), util.InitConfigName)) ||
-		!util.FileIsExist(filepath.Join(util.GetBlogConfigPath(), util.SysConfigName)) {
+		!util.FileIsExist(filepath.Join(util.GetBlogConfigPath(), service.SysConfigName)) {
 		log.Println("配置文件缺失，将重新生成。")
 		return true
 	}
@@ -97,6 +97,10 @@ func IsNeedInstall() bool {
 }
 
 func SetRunCache() error {
+	// 初始化系统设置
+	if err := service.InitSysConfig(); err != nil {
+		return err
+	}
 	// 读取访客记录文件，并缓存数据
 	visitorRecordPath := filepath.Join(util.GetBlogDataPath(), "visitor_count.txt")
 	data, err := ioutil.ReadFile(visitorRecordPath)
@@ -120,11 +124,12 @@ func SetRunCache() error {
 
 	util.Cache.Set(model.FriendLinkCount, int32(len(friends)), 0)
 	util.Cache.Set(model.BookCount, int32(len(books)), 0)
+
 	return nil
 }
 
-func setSysConfig() *util.SysSetting {
-	cfg := &util.SysSetting{}
+func setSysConfig() *model.SysSetting {
+	cfg := &model.SysSetting{}
 	for {
 		if cfg.BlogName == "" {
 			v := strings.TrimSpace(getInput("博客名称"))

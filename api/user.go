@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/smallsixFight/hyakkei_blog/logger"
 	"github.com/smallsixFight/hyakkei_blog/model"
+	"github.com/smallsixFight/hyakkei_blog/service"
 	"github.com/smallsixFight/hyakkei_blog/util"
 	"net/http"
 	"strings"
@@ -48,7 +49,7 @@ func Login(ctx *gin.Context) {
 }
 
 func VerifyLoginInfo(param *loginParam) (token string, err error) {
-	cfg := util.GetSysConfig()
+	cfg := service.GetSysConfig()
 	// 密码加密验证
 	result, err := util.MD5Encrypt(param.Password, cfg.Salt)
 	if err != nil {
@@ -60,7 +61,7 @@ func VerifyLoginInfo(param *loginParam) (token string, err error) {
 	// 生成 token
 	claims := make(map[string]interface{})
 	claims["username"] = param.Username
-	token, err = util.CreateToken(claims, time.Hour*2)
+	token, err = util.CreateToken(claims, time.Hour*6)
 	if err != nil {
 		return
 	}
