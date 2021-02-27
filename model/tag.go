@@ -6,5 +6,5 @@ type Tag struct {
 	Description string `json:"description"`
 	CreateAt    string `json:"create_at"`
 	ModifyAt    string `json:"modify_at"`
-	UseCount    int    `json:"use_count"`
+	//UseCount    int    `json:"use_count"`
 }
