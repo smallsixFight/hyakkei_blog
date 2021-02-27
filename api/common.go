@@ -103,13 +103,15 @@ func getAttachSizeLimit(typ string) int64 {
 func PreviewMarkdown(ctx *gin.Context) {
 	reply := model.Reply{}
 	defer ctx.JSON(http.StatusOK, &reply)
-	data := ctx.PostForm("data")
-	if data == "" {
+	content := struct {
+		Data string `json:"data"`
+	}{}
+	if err := ctx.BindJSON(&content); err != nil {
 		reply.SetMessage("提交参数错误")
 		return
 	}
 	var b bytes.Buffer
-	if err := util.GetMDHandle().Convert([]byte(data), &b); err != nil {
+	if err := util.GetMDHandle().Convert([]byte(content.Data), &b); err != nil {
 		reply.SetMessage("文本转换失败，" + err.Error())
 		return
 	}
