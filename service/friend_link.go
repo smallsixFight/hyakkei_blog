@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 )
 
+const FriendLinkFileNme = "friend_links.json"
+
 func FindFriendLinkAndIdx(id int64, list []model.FriendLink) (idx int, link *model.FriendLink) {
 	low, high := 0, len(list)-1
 	for low <= high {
@@ -27,7 +29,7 @@ func FindFriendLinkAndIdx(id int64, list []model.FriendLink) (idx int, link *mod
 }
 
 func SaveFriendLinks(bs []byte) error {
-	filename := filepath.Join(util.GetBlogDataPath(), "friend_links.json")
+	filename := filepath.Join(util.GetBlogDataPath(), FriendLinkFileNme)
 	f, err := os.OpenFile(filename, os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		logger.Println(err.Error())
@@ -63,7 +65,7 @@ func FriendLinkIsExist(id int64, url string, list []model.FriendLink) bool {
 }
 
 func getFriendLinksData() (data []byte, err error) {
-	filename := filepath.Join(util.GetBlogDataPath(), "friend_links.json")
+	filename := filepath.Join(util.GetBlogDataPath(), FriendLinkFileNme)
 	f, err := os.Open(filename)
 	if err != nil {
 		logger.Println(err.Error())

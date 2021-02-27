@@ -13,10 +13,12 @@ import (
 
 var bookLock sync.Mutex
 
+const BookFileName = "books.json"
+
 func SaveBooks(bs []byte) error {
 	bookLock.Lock()
 	defer bookLock.Unlock()
-	filename := filepath.Join(util.GetBlogDataPath(), "books.json")
+	filename := filepath.Join(util.GetBlogDataPath(), BookFileName)
 	f, err := os.OpenFile(filename, os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		logger.Println(err.Error())
@@ -70,7 +72,7 @@ func GetBooks() (d []byte, err error) {
 func getBooksData() (data []byte, err error) {
 	bookLock.Lock()
 	defer bookLock.Unlock()
-	filename := filepath.Join(util.GetBlogDataPath(), "books.json")
+	filename := filepath.Join(util.GetBlogDataPath(), BookFileName)
 	f, err := os.Open(filename)
 	if err != nil {
 		logger.Println(err.Error())

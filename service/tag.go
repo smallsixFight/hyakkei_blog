@@ -13,6 +13,8 @@ import (
 
 var tagLock sync.Mutex
 
+const TagsFileName = "tags.json"
+
 func TagIsExist(id int64, name string, list []model.Tag) bool {
 	for i := range list {
 		if list[i].Name == name && list[i].Id != id {
@@ -25,7 +27,7 @@ func TagIsExist(id int64, name string, list []model.Tag) bool {
 func SaveTags(bs []byte) error {
 	tagLock.Lock()
 	defer tagLock.Unlock()
-	filename := filepath.Join(util.GetBlogDataPath(), "tags.json")
+	filename := filepath.Join(util.GetBlogDataPath(), TagsFileName)
 	f, err := os.OpenFile(filename, os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		logger.Println(err.Error())
@@ -70,7 +72,7 @@ func GetTags() (d []byte, err error) {
 func getTagsData() (data []byte, err error) {
 	tagLock.Lock()
 	defer tagLock.Unlock()
-	filename := filepath.Join(util.GetBlogDataPath(), "tags.json")
+	filename := filepath.Join(util.GetBlogDataPath(), TagsFileName)
 	f, err := os.Open(filename)
 	if err != nil {
 		logger.Println(err.Error())
