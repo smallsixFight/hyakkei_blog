@@ -36,7 +36,9 @@ func GetDashboardInfo(ctx *gin.Context) {
 			info.ArticleInfo.DraftCount++
 		}
 	}
-	info.ArticleInfo.LastAdd = articles[len(articles)-1].Title
+	if len(articles) > 0 {
+		info.ArticleInfo.LastAdd = articles[len(articles)-1].Title
+	}
 
 	for i := range pages {
 		if pages[i].Status == model.Publish {
@@ -46,7 +48,9 @@ func GetDashboardInfo(ctx *gin.Context) {
 			info.PageInfo.DraftCount++
 		}
 	}
-	info.PageInfo.LastAdd = pages[len(pages)-1].Title
+	if len(pages) > 0 {
+		info.PageInfo.LastAdd = pages[len(pages)-1].Title
+	}
 
 	info.FriendLinkCount = util.Cache.GetInt32(model.FriendLinkCount)
 	info.BookCount = util.Cache.GetInt32(model.BookCount)
