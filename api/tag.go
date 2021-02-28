@@ -17,6 +17,7 @@ func GetTagList(ctx *gin.Context) {
 	reply := model.Reply{}
 	defer ctx.JSON(http.StatusOK, &reply)
 	page := util.Str2Int(ctx.Query("page"))
+	typ := ctx.Query("typ")
 	if page < 1 {
 		page = 1
 	}
@@ -26,13 +27,13 @@ func GetTagList(ctx *gin.Context) {
 		return
 	}
 	data := make([]model.Tag, 0)
-	reply.SetData(data)
+	reply.SetData(&data)
 	if err := json.Unmarshal(list, &data); err != nil {
 		logger.Println(err.Error())
 		reply.SetMessage("解析标签数据失败")
 		return
 	}
-	if (page-1)*10 < len(data) {
+	if typ != "all" && (page-1)*10 < len(data) {
 		last := page * 10
 		if last > len(data) {
 			last = len(data)
