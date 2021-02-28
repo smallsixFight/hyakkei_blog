@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+    <link rel="shortcut icon" href="#{{img_path}}/favicon.ico">
+    <link rel="stylesheet" href="#{{css_path}}/main.css">
+    <title>仪表盘 - hyakkei</title>
+    <script src='#{{js_path}}/jquery.min.js'></script>
+</head>
+
+<body>
+    <div class="backstage">
+        <div>
+            <header class="backstage-header">
+                <span id="collapsed-btn"><img src="#{{img_path}}/icons/menu.svg" /></span>
+                <h1>hyakkei 博客管理</h1>
+                <div class="dropdown">
+                    <span id="username"></span>
+                    <ul class="dropdown-menu">
+                        <li onclick="logout()">退出登录</li>
+                    </ul>
+                </div>
+            </header>
+            <aside class="backstage-aside">
+                <ul>
+                    <li id="aside-dashboard" onclick="jump('dashboard')">
+                        <img src="#{{img_path}}/icons/dashboard.svg" /><span>仪表盘</span>
+                    </li>
+                    <li id="aside-articles" onclick="jump('articles')">
+                        <img src="#{{img_path}}/icons/article.svg" /><span>文章管理</span>
+                    </li>
+                    <li id="aside-pages" onclick="jump('pages')">
+                        <img src="#{{img_path}}/icons/page_m.svg" /><span>页面管理</span>
+                    </li>
+                    <li id="aside-books" onclick="jump('books')">
+                        <img src="#{{img_path}}/icons/book.svg" /><span>书籍管理</span>
+                    </li>
+                    <li id="aside-tags" onclick="jump('tags')">
+                        <img src="#{{img_path}}/icons/tag.svg" /><span>标签管理</span>
+                    </li>
+                    <li id="aside-friends" onclick="jump('friends')">
+                        <img src="#{{img_path}}/icons/friend.svg" /><span>友链管理</span>
+                    </li>
+                    <li id="aside-setting" onclick="jump('setting')">
+                        <img src="#{{img_path}}/icons/setting.svg" /><span>系统设置</span>
+                    </li>
+                </ul>
+            </aside>
+            <main class="backstage-main">
+                <div class="cover"></div>
+                <div class="backstage-article-statistics">
+                    <span class="title">文章</span>
+                    <div class="backstage-statistics-wrapper">
+                        <div class="backstage-card">
+                            <p>已发布</p>
+                            <p id="articlePublishCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>草稿箱</p>
+                            <p id="articleDraftCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>最近发布</p>
+                            <p id="lastPublishArticle">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>最近添加</p>
+                            <p id="lastAddArticle">-- / --</p>
+                        </div>
+                        <i></i>
+                        <i></i>
+                    </div>
+                </div>
+                <div class="backstage-article-statistics">
+                    <span class="title">自定义页</span>
+                    <div class="backstage-statistics-wrapper">
+                        <div class="backstage-card">
+                            <p>已发布</p>
+                            <p id="pagePublishCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>草稿箱</p>
+                            <p id="pageDraftCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>最近发布</p>
+                            <p id="lastPublishPage">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>最近添加</p>
+                            <p id="lastAddPage">-- / --</p>
+                        </div>
+                        <i></i>
+                        <i></i>
+                    </div>
+                </div>
+                <div class="backstage-article-statistics">
+                    <span class="title">其他</span>
+                    <div class="backstage-statistics-wrapper">
+                        <div class="backstage-card">
+                            <p>友链数</p>
+                            <p id="friendCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>访客数</p>
+                            <p id="visitorCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>书籍</p>
+                            <p id="bookCount">-- / --</p>
+                        </div>
+                        <div class="backstage-card">
+                            <p>运行时间</p>
+                            <p id="runTime">-- / --</p>
+                        </div>
+                        <i></i>
+                        <i></i>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <footer class="footer">
+            &copy; 2021 | 由 hyakkei 勉力驱动
+        </footer>
+    </div>
+</body>
+
+<script src="#{{js_path}}/main.js"></script>
+<script src="#{{js_path}}/bs.js"></script>
+<script>
+    var initTime = 0;
+
+    function getDashboardInfo() {
+        request(bsApi.dashboard).then(resp => {
+            if (!resp.success) {
+                message.warn(resp.message);
+                return;
+            }
+            const data = resp.data;
+            initTime = resp.data.init_time;
+            $('#articlePublishCount').text(data.article_info.publish_count);    // 文章信息
+            $('#articleDraftCount').text(data.article_info.draft_count);
+            $('#lastPublishArticle').text(data.article_info.last_publish || '暂无');
+            $('#lastAddArticle').text(data.article_info.last_add || '暂无');
+            $('#pagePublishCount').text(data.page_info.publish_count);  // 自定义页信息
+            $('#pageDraftCount').text(data.page_info.draft_count);
+            $('#lastPublishPage').text(data.page_info.last_publish || '暂无');
+            $('#lastAddPage').text(data.page_info.last_add || '暂无');
+            $('#bookCount').text(data.book_count);  // 其他
+            $('#friendCount').text(data.friend_link_count);
+            $('#visitorCount').text(data.visitor_count);
+        })
+    }
+
+    getDashboardInfo();
+
+    setInterval(() => {
+        if (initTime) {
+            const now = Date.parse(new Date()) / 1000;
+            const duraton = now - initTime;
+            const d = Math.floor(duraton / 3600 / 24);
+            if (d) {
+                $('#runTime').text(d + ' 天');
+            } else {
+                const h = Math.floor(duraton / 3600);
+                const m = Math.floor((duraton - h * 3600) / 60);
+                const s = (duraton - h * 3600 - m * 60);
+                $('#runTime').text((h && h + ' 小时 ') + m + ' 分 ' + s + ' 秒');
+            }
+        }
+    }, 1000)
+</script>

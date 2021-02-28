@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+    <link rel="shortcut icon" href="#{{img_path}}/favicon.ico">
+    <link rel="stylesheet" href="#{{css_path}}/main.css">
+    <title>自定义页管理 - hyakkei</title>
+    <script src='#{{js_path}}/jquery.min.js'></script>
+</head>
+
+<body>
+    <div class="backstage">
+        <div>
+            <header class="backstage-header">
+                <span id="collapsed-btn"><img src="#{{img_path}}/icons/menu.svg" /></span>
+                <h1>hyakkei 博客管理</h1>
+                <div class="dropdown">
+                    <span id="username"></span>
+                    <ul class="dropdown-menu">
+                        <li onclick="logout()">退出登录</li>
+                    </ul>
+                </div>
+            </header>
+            <aside class="backstage-aside">
+                <ul>
+                    <li id="aside-dashboard" onclick="jump('dashboard')">
+                        <img src="#{{img_path}}/icons/dashboard.svg" /><span>仪表盘</span>
+                    </li>
+                    <li id="aside-articles" onclick="jump('articles')">
+                        <img src="#{{img_path}}/icons/article.svg" /><span>文章管理</span>
+                    </li>
+                    <li id="aside-pages" onclick="jump('pages')">
+                        <img src="#{{img_path}}/icons/page_m.svg" /><span>页面管理</span>
+                    </li>
+                    <li id="aside-books" onclick="jump('books')">
+                        <img src="#{{img_path}}/icons/book.svg" /><span>书籍管理</span>
+                    </li>
+                    <li id="aside-tags" onclick="jump('tags')">
+                        <img src="#{{img_path}}/icons/tag.svg" /><span>标签管理</span>
+                    </li>
+                    <li id="aside-friends" onclick="jump('friends')">
+                        <img src="#{{img_path}}/icons/friend.svg" /><span>友链管理</span>
+                    </li>
+                    <li id="aside-setting" onclick="jump('setting')">
+                        <img src="#{{img_path}}/icons/setting.svg" /><span>系统设置</span>
+                    </li>
+                </ul>
+            </aside>
+            <main class="backstage-main">
+                <div class="cover"></div>
+                <div class="card">
+                    <span>自定义页管理</span>
+                </div>
+                <div class="card">
+                    <button my-loading class="btn" onclick="handleEdit(0)">新增</button>
+                    <div class="table-wrapper" loading>
+                        <table class="backstage-table">
+                        </table>
+                        <nav>
+                            <ul id="pagination">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+        <footer class="footer">
+            &copy; 2021 | 由 hyakkei 勉力驱动
+        </footer>
+    </div>
+</body>
+
+<script src="#{{js_path}}/main.js"></script>
+<script src="#{{js_path}}/bs.js"></script>
+<script>
+    var page = 1;
+    var dataList = [];
+    var total = 0;
+
+    const columns = [{ title: "标题", dataIdx: "title" }, { title: "slug", dataIdx: "slug" },
+    { title: "创建日期", dataIdx: "create_at" }, { title: "最近修改", dataIdx: "modify_at" },
+    { title: "状态", dataIdx: "status", render: function (val) { return val === "publish" ? `<span class="tag green">发布</span>` : `<spann class="tag orange">草稿</span>` } },
+    { title: "操作", dataIdx: "id", render: function (id, idx) { return `<a onclick="handleEdit(${id})">编辑</a><hr /><a onclick="del(${idx})">删除</a>` } }];
+
+    generateTableContent($('.table-wrapper table').get(0), columns);
+
+    async function del(idx) {
+        try {
+            setLoading();
+            await request(bsApi.delPage + `?id=${dataList[idx].id}`, { method: "DELETE" }).then(resp => {
+                if (!resp.success) {
+                    message.warn(resp.message);
+                    return;
+                }
+                message.success(resp.message);
+                getList(page);
+            })
+        } finally {
+            removeLoading();
+        }
+    }
+
+    async function getList(p) {
+        try {
+            setLoading();
+            await request(bsApi.pageList + `?page=${p}`).then(resp => {
+                if (!resp.success) {
+                    message.warn(resp.message);
+                    return;
+                }
+                page = p;
+                dataList = resp.data || [];
+                total = resp.total;
+                let tableEle = $('.table-wrapper table').get(0);
+                updateTableData(tableEle, columns, dataList);
+                updatePagination();
+            });
+        } finally {
+            removeLoading();
+        }
+    }
+
+    getList(page);
+
+    function updatePagination() {
+        const e = $("#pagination").get(0);
+        if (!e) { return }
+        let appStr = "";
+        if (page > 1) {
+            appStr += `<li><a onclick="getList(${page - 1})">${page - 1}</a></li>`;
+        }
+        appStr += `<li><a class="is-selected">${page}</a></li>`;
+        if (page * 10 < total) {
+            appStr += `<li><a onclick="getList(${page + 1})">${page + 1}</a></li>`;
+        }
+        $(e).empty();
+        $(e).append(appStr);
+    }
+
+    function handleEdit(id) {
+        jump(`pages_edit`, { id: id });
+    }
+</script>

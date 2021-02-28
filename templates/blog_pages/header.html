@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="#{{css_path}}/main.css">
+    <script src='#{{js_path}}/jquery.min.js'></script>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="navigation">
+            <ul>
+                <li><a href="index.html" target="_parent">Articles</a></li>
+                #{{github}}
+                <li><a href="friends.html" target="_parent">Friends</a></li>
+                #{{book_page}}
+                #{{custom_page}}
+            </ul>
+        </nav>
+        <a href="index.html">
+            <img class="avatar" src="#{{img_path}}/#{{logo_filename}}" />
+        </a>
+        <a href="index.html">
+            <div class="site-title">#{{blog_name}}</div>
+        </a>
+        <p class="signature"></p>
+    </header>
+</body>
+<script>
+    let sign_txt = window.parent.getTitle ? window.parent.getTitle() : '';
+    sign_txt = sign_txt || '我们所度过每一个平凡的日常，也许就是连续不断发生的奇迹。';
+    $('.signature').text(sign_txt);
+</script>
+
+</html>

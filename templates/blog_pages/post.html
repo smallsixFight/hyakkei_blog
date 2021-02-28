@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+    <title>hyakkei's blog</title>
+    <link rel="shortcut icon" href="#{{img_path}}/favicon.ico">
+    <link rel="stylesheet" href="#{{css_path}}/photoswipe.css">
+    <link rel="stylesheet" href="#{{css_path}}/default-skin.css">
+    <link rel="stylesheet" href="#{{css_path}}/highlight.css">
+    <link rel="stylesheet" href="#{{css_path}}/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/meting@2/dist/Meting.min.js"></script>
+    <script src="#{{js_path}}/jquery.min.js"></script>
+    <script src="#{{js_path}}/highlight.js"></script>
+    <script src="#{{js_path}}/photoswipe.min.js"></script>
+    <script src="#{{js_path}}/photoswipe-ui-default.min.js"></script>
+</head>
+
+<body>
+<div class='main'>
+    <div class="main-content">
+        <iframe class="header-iframe" width="100%" src="header.html" frameborder="no" scrolling="no"></iframe>
+        <div class="content">
+            #{{post_content}}
+        </div>
+        <footer class="footer">
+            &copy; 2021 | 由 hyakkei 勉力驱动
+        </footer>
+    </div>
+</div>
+
+#{{pswp}}
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightBlock(block);
+        });
+    });
+    let gotoTop = '<div id="gotoTop" class="goto-top" title="回到顶部"></div>';
+    $("body").append(gotoTop);
+    $("#gotoTop").click(
+        function () {
+            $('html,body').animate({scrollTop: 0}, 700);
+        }).hover(
+        function () {
+            $(this).addClass("hover");
+        },
+        function () {
+            $(this).removeClass("hover");
+        });
+    $(window).scroll(function () {
+        var s = $(window).scrollTop();
+        var eleSelector = $("#gotoTop");
+        if (s > window.screen.height / 2) {
+            eleSelector.get(0).style.visibility = 'initial';
+            eleSelector.fadeIn(100);
+        } else {
+            eleSelector.fadeOut(200);
+        }
+    });
+</script>
+
+<script src="#{{js_path}}/gallery-init.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+    <link rel="shortcut icon" href="#{{img_path}}/favicon.ico">
+    <link rel="stylesheet" href="#{{css_path}}/main.css">
+    <title>自定义页编辑 - hyakkei</title>
+    <script src='#{{js_path}}/jquery.min.js'></script>
+</head>
+
+<body>
+    <div class="backstage">
+        <div>
+            <header class="backstage-header">
+                <span id="collapsed-btn"><img src="#{{img_path}}/icons/menu.svg" /></span>
+                <h1>hyakkei 博客管理</h1>
+                <div class="dropdown">
+                    <span id="username"></span>
+                    <ul class="dropdown-menu">
+                        <li onclick="logout()">退出登录</li>
+                    </ul>
+                </div>
+            </header>
+            <aside class="backstage-aside">
+                <ul>
+                    <li id="aside-dashboard" onclick="jump('dashboard')">
+                        <img src="#{{img_path}}/icons/dashboard.svg" /><span>仪表盘</span>
+                    </li>
+                    <li id="aside-articles" onclick="jump('articles')">
+                        <img src="#{{img_path}}/icons/article.svg" /><span>文章管理</span>
+                    </li>
+                    <li id="aside-pages" onclick="jump('pages')">
+                        <img src="#{{img_path}}/icons/page_m.svg" /><span>页面管理</span>
+                    </li>
+                    <li id="aside-books" onclick="jump('books')">
+                        <img src="#{{img_path}}/icons/book.svg" /><span>书籍管理</span>
+                    </li>
+                    <li id="aside-tags" onclick="jump('tags')">
+                        <img src="#{{img_path}}/icons/tag.svg" /><span>标签管理</span>
+                    </li>
+                    <li id="aside-friends" onclick="jump('friends')">
+                        <img src="#{{img_path}}/icons/friend.svg" /><span>友链管理</span>
+                    </li>
+                    <li id="aside-setting" onclick="jump('setting')">
+                        <img src="#{{img_path}}/icons/setting.svg" /><span>系统设置</span>
+                    </li>
+                </ul>
+            </aside>
+            <main class="backstage-main">
+                <div class="cover"></div>
+                <div class="card">自定义页编辑</div>
+                <div class="card">
+                    <div class="edit-btn-wrapper">
+                        <button class="btn blue" onclick="onPreview()">预览</button>
+                        <button class="btn orange" onclick="savePage('draft')">保存</button>
+                        <button class="btn" onclick="savePage('publish')">发布</button>
+                    </div>
+                    <div class="edit-wrapper">
+                        <input id="slug" autocomplete="off" placeholder="slug" style="margin-bottom: 0;"
+                            onchange="onSlugChange(this.value)" />
+                        <input id="title" autocomplete="off" placeholder="自定义页标题" style="margin-top: 5px;"
+                            onchange="onTitleChange(this.value)" />
+                        <div class="edit-content-wrapper">
+                            <div class="edit-navigation">
+                                <div id="bold">
+                                    <span title="加粗">
+                                        <img src="#{{img_path}}/icons/editor/bold.svg" />
+                                    </span>
+                                </div>
+                                <div id="italic">
+                                    <span title="斜体">
+                                        <img src="#{{img_path}}/icons/editor/italic.svg" />
+                                    </span>
+                                </div>
+                                <div id="underline">
+                                    <span title="下划线">
+                                        <img src="#{{img_path}}/icons/editor/underline.svg" />
+                                    </span>
+                                </div>
+                                <div id="strikethrough">
+                                    <span title="删除线">
+                                        <img src="#{{img_path}}/icons/editor/strikethrough.svg" />
+                                    </span>
+                                </div>
+                                <div id="bulletedlist">
+                                    <span title="无序列表">
+                                        <img src="#{{img_path}}/icons/editor/bulletedlist.svg" />
+                                    </span>
+                                </div>
+                                <div id="numberedlist">
+                                    <span title="有序列表">
+                                        <img src="#{{img_path}}/icons/editor/numberedlist.svg" />
+                                    </span>
+                                </div>
+                                <div id="quote">
+                                    <span title="引用">
+                                        <img src="#{{img_path}}/icons/editor/quote.svg" />
+                                    </span>
+                                </div>
+                                <div id="hr">
+                                    <span title="分割线">
+                                        <img src="#{{img_path}}/icons/editor/hr.svg" />
+                                    </span>
+                                </div>
+                                <div id="tag_code">
+                                    <span title="单行代码">
+                                        <img src="#{{img_path}}/icons/editor/tag_code.svg" />
+                                    </span>
+                                </div>
+                                <div id="code_block">
+                                    <span title="代码块">
+                                        <img src="#{{img_path}}/icons/editor/code_block.svg" />
+                                    </span>
+                                </div>
+                                <div id="link">
+                                    <span title="链接">
+                                        <img src="#{{img_path}}/icons/editor/link.svg" />
+                                    </span>
+                                </div>
+                                <div id="image">
+                                    <span title="图片链接">
+                                        <img src="#{{img_path}}/icons/editor/image.svg" />
+                                    </span>
+                                </div>
+                            </div>
+                            <textarea id="content" autocomplete="off" placeholder="自定义内容"
+                                onchange="onContentChange(this.value)"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+        <footer class="footer">
+            &copy; 2021 | 由 hyakkei 勉力驱动
+        </footer>
+    </div>
+</body>
+
+<script src="#{{js_path}}/main.js"></script>
+<script src="#{{js_path}}/bs.js"></script>
+<script>
+    const id = getqueryParam().id || 0;
+    var data = { typ: "page" };
+
+    function onTitleChange(val) {
+        data.title = val;
+    }
+
+    function onSlugChange(val) {
+        data.slug = val;
+    }
+
+    function onContentChange(val) {
+        data.markdown_text = val;
+    }
+
+    async function savePage(status) {
+        if (!data.title) { message.warn("自定义页标题不能为空"); return; };
+        if (!data.markdown_text) { message.warn("自定义页内容不能为空"); return; };
+        data.status = status;
+        try {
+            setLoading();
+            await request(bsApi.savePage, { method: "POST", data: data }).then(resp => {
+                if (!resp.success) {
+                    message.warn(resp.message);
+                    return;
+                }
+                message.success(resp.message);
+                setTimeout(() => {
+                    jump('pages');
+                }, 500);
+            })
+
+        } finally {
+            removeLoading();
+        }
+    }
+
+    function getPageDetail(id) {
+        request(bsApi.pageDetail + `/${id}`).then(resp => {
+            if (!resp.success) {
+                message.warn(resp.message);
+                return;
+            }
+            data = resp.data;
+            $("#title").val(data.title);
+            $("#slug").val(data.slug);
+            $("#content").val(data.markdown_text);
+        })
+    }
+
+    if (id > 0) { getPageDetail(id) }
+
+    function onPreview() {
+        changeGlobalCover("block");
+        $(".backstage").append('<iframe class="preview-warapper" src="./preview.html"></iframe>');
+    }
+
+    function closePreview() {
+        $(".preview-warapper").remove();
+        changeGlobalCover('none');
+    }
+</script>

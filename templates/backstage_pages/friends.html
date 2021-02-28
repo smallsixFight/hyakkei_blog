@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta id="viewport" name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1,user-scalable=no">
+    <link rel="shortcut icon" href="#{{img_path}}/favicon.ico">
+    <link rel="stylesheet" href="#{{css_path}}/main.css">
+    <title>友链管理 - hyakkei</title>
+    <script src='#{{js_path}}/jquery.min.js'></script>
+</head>
+
+<body>
+    <div class="backstage">
+        <div class="global-cover"></div>
+        <div>
+            <header class="backstage-header">
+                <span id="collapsed-btn"><img src="#{{img_path}}/icons/menu.svg" /></span>
+                <h1>hyakkei 博客管理</h1>
+                <div class="dropdown">
+                    <span id="username"></span>
+                    <ul class="dropdown-menu">
+                        <li onclick="logout()">退出登录</li>
+                    </ul>
+                </div>
+            </header>
+            <aside class="backstage-aside">
+                <ul>
+                    <li id="aside-dashboard" onclick="jump('dashboard')">
+                        <img src="#{{img_path}}/icons/dashboard.svg" /><span>仪表盘</span>
+                    </li>
+                    <li id="aside-articles" onclick="jump('articles')">
+                        <img src="#{{img_path}}/icons/article.svg" /><span>文章管理</span>
+                    </li>
+                    <li id="aside-pages" onclick="jump('pages')">
+                        <img src="#{{img_path}}/icons/page_m.svg" /><span>页面管理</span>
+                    </li>
+                    <li id="aside-books" onclick="jump('books')">
+                        <img src="#{{img_path}}/icons/book.svg" /><span>书籍管理</span>
+                    </li>
+                    <li id="aside-tags" onclick="jump('tags')">
+                        <img src="#{{img_path}}/icons/tag.svg" /><span>标签管理</span>
+                    </li>
+                    <li id="aside-friends" onclick="jump('friends')">
+                        <img src="#{{img_path}}/icons/friend.svg" /><span>友链管理</span>
+                    </li>
+                    <li id="aside-setting" onclick="jump('setting')">
+                        <img src="#{{img_path}}/icons/setting.svg" /><span>系统设置</span>
+                    </li>
+                </ul>
+            </aside>
+            <main class="backstage-main">
+                <div class="cover"></div>
+                <div class="card">
+                    <span>友链管理</span>
+                </div>
+                <div class="card">
+                    <button my-loading class="btn" onclick="handleEdit()">新增</button>
+                    <div class="table-wrapper" loading>
+                        <table class="backstage-table">
+                        </table>
+                        <nav>
+                            <ul id="pagination">
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer class="footer">
+            &copy; 2021 | 由 hyakkei 勉力驱动
+        </footer>
+
+        <div class="global-layer" style="height: 420px;">
+            <div class="global-layer-header" onclick="onClose()">x</div>
+            <div class="global-layer-content">
+                <div>
+                    <span>名称</span>
+                    <input id="friendName" autocomplete="off" placeholder="hyakkei"
+                        onchange="onNameChange(this.value)" />
+                </div>
+                <div>
+                    <span>链接</span>
+                    <input id="friendLinkUrl" autocomplete="off" placeholder="http://blog.example.com"
+                        onchange="onFriendUrlChange(this.value)" />
+                </div>
+                <div>
+                    <span>头像</span>
+                    <input id="friendAvatarUrl" autocomplete="off" placeholder="http://example.imgname.jpg"
+                        onchange="onAvatarChange(this.value)" />
+                </div>
+                <div>
+                    <span>描述</span>
+                    <textarea id="friendDesc" autocomplete="off" placeholder="介绍一下朋友"
+                        onchange="onDescChange(this.value)"></textarea>
+                </div>
+            </div>
+            <div class="btn-wrapper">
+                <button onclick="onClose()" class="btn">取消</button>
+                <button class="btn" onclick="saveFriendInfo()" my-loading>确定</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="#{{js_path}}/main.js"></script>
+<script src="#{{js_path}}/bs.js"></script>
+<script>
+    var page = 1;
+    var dataList = [];
+    var total = 0;
+    var editData = {};
+
+    const columns = [{ title: "名称", dataIdx: "name" }, { title: "描述", dataIdx: "description" },
+    { title: "链接", dataIdx: "url", render: function (v) { if (v) { return `<a href="${v}" title="${v}" target="_blank">点击前往</a>` } else { return `<span>暂无链接</span>` } } }, { title: "添加时间", dataIdx: "create_at" },
+    { title: "操作", render: function (_, idx) { return `<a onclick="handleEdit(${idx})">编辑</a><hr /><a onclick="delFriendLink(${idx})">删除</a>` } }];
+
+    function onNameChange(val) {
+        editData.name = val;
+    }
+
+    function onFriendUrlChange(val) {
+        editData.url = val;
+    }
+
+    function onAvatarChange(val) {
+        editData.avatar_url = val;
+    }
+
+    function onDescChange(val) {
+        editData.description = val;
+    }
+
+    async function saveFriendInfo() {
+        if (!editData) {
+            message.warn("编辑数据不存在");
+            return
+        }
+        if (!editData.name) {
+            message.warn("请输入名称");
+            return
+        }
+        if (!editData.url) {
+            message.warn("请输入链接地址");
+            return;
+        }
+        try {
+            setLoading();
+            // 保存数据
+            await request(bsApi.saveFriendInfo, { data: editData, method: "POST" }).then(resp => {
+                if (!resp.success) {
+                    message.warn(resp.message);
+                    return;
+                }
+                message.success(resp.message);
+                getFriendLinkList(page);
+                onClose();
+            })
+        } finally {
+            removeLoading();
+        }
+    }
+
+    async function delFriendLink(id) {
+        try {
+            setLoading();
+            const id = dataList[idx].id;
+            await request(bsApi.delFriendLink + `?id=${id}`, { method: "DELETE" }).then(resp => {
+                if (!resp.success) {
+                    message.warn(resp.message);
+                    return;
+                }
+                message.success(resp.message);
+                getFriendLinkList(page);
+            })
+        } finally {
+            removeLoading();
+        }
+    }
+
+    async function getFriendLinkList(p) {
+        try {
+            setLoading();
+            await request(bsApi.friendList + `?page=${p}`).then(resp => {
+                if (!resp.success) {
+                    message.warn(resp.message);
+                    return;
+                }
+                page = p;
+                dataList = resp.data || [];
+                total = resp.total;
+                let tableEle = $('.table-wrapper table').get(0);
+                updateTableData(tableEle, columns, dataList);
+                updatePagination();
+            });
+        } finally {
+            removeLoading();
+        }
+    }
+
+    function updatePagination() {
+        const e = $("#pagination").get(0);
+        if (!e) { return }
+        let appStr = "";
+        if (page > 1) {
+            appStr += `<li><a onclick="getFriendLinkList(${page - 1})">${page - 1}</a></li>`;
+        }
+        appStr += `<li><a class="is-selected">${page}</a></li>`;
+        if (page * 10 < total) {
+            appStr += `<li><a onclick="getFriendLinkList(${page + 1})">${page + 1}</a></li>`;
+        }
+        $(e).empty();
+        $(e).append(appStr);
+    }
+
+    getFriendLinkList(1);
+    generateTableContent($('.table-wrapper table').get(0), columns);
+
+    function handleEdit(idx) {
+        editData = !isNaN(idx) ? { ...dataList[idx] } : editData;
+        $("#friendName").val(editData.name);
+        $("#friendLinkUrl").val(editData.url);
+        $("#friendAvatarUrl").val(editData.avatar_url);
+        $("#friendDesc").val(editData.description);
+        changeLayerVisible();
+    }
+
+    function onClose() {
+        editData = {};
+        changeLayerVisible();
+    }
+</script>
