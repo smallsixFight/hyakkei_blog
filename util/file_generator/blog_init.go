@@ -14,7 +14,7 @@ var (
 	BlogPagePath   = filepath.Join(util.GetBlogTemplatePath(), "blog_pages")
 	BlogFileList   = []string{"index.html", "post.html", "page.html", "friends.html", "books.html", "header.html"}
 	BlogBSPagePath = filepath.Join(util.GetBlogTemplatePath(), "backstage_pages")
-	BlogBsFileList = []string{"articles.html", "articles_edit.html", "friends.html", "login.html",
+	BlogBsFileList = []string{"articles.html", "articles_edit.html", "friends.html", "login.html", "books.html",
 		"pages.html", "pages_edit.html", "preview.html", "setting.html", "tags.html", "dashboard.html"}
 )
 
@@ -55,7 +55,7 @@ func GenerateBlogFile() error {
 	}
 	posts = make([]model.Post, 0)
 	_ = json.Unmarshal(d, &posts)
-	savePath := filepath.Join(service.GetSysConfig().SavePath, "hyakkei", "custom_page")
+	savePath := filepath.Join(service.GetSysConfig().SavePath, "hyakkei")
 	if !util.FileIsExist(savePath) {
 		if err := os.MkdirAll(savePath, os.ModePerm); err != nil {
 			return err
@@ -78,7 +78,7 @@ func GenerateBlogFile() error {
 		if err != nil {
 			return fmt.Errorf("读取 %s 模版文件数据失败: %s", BlogBsFileList[i], err.Error())
 		}
-		str := ReplaceBasePath(template)
+		str := ReplaceBasePath(template, "..")
 		if err := util.WriteFile([]byte(str), filepath.Join(savePath, BlogBsFileList[i])); err != nil {
 			return err
 		}
@@ -99,12 +99,18 @@ func GenerateBlogConfig(sysCfg *model.SysSetting) error {
 }
 
 func GenerateDataFile(arr []string) error {
+	dataPath := util.GetBlogDataPath()
+	if !util.FileIsExist(dataPath) {
+		if err := os.MkdirAll(dataPath, os.ModePerm); err != nil {
+			return fmt.Errorf("创建数据存储失败: %s", err.Error())
+		}
+	}
 	for i := range arr {
-		path := filepath.Join(util.GetBlogDataPath(), arr[i])
+		path := filepath.Join(dataPath, arr[i])
 		if util.FileIsExist(path) {
 			continue
 		}
-		fmt.Printf("正在创建[%s]\n" + path)
+		fmt.Printf("正在创建[%s]\n", path)
 		f, err := os.Create(path)
 		if err != nil {
 			return fmt.Errorf("创建失败: %s", err.Error())

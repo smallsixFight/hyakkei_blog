@@ -184,7 +184,7 @@ func setSysConfig() *model.SysSetting {
 		}
 		break
 	}
-	cfg.LogoName = "logo.jpg"
+	cfg.LogoName = "logo.png"
 	cfg.InitTime = time.Now().Unix()
 	return cfg
 }

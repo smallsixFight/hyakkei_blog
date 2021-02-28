@@ -184,7 +184,7 @@ func DeletePage(ctx *gin.Context) {
 		return
 	}
 	if val.Status == model.Publish {
-		filename := filepath.Join(util.GetAbsPath(), "hyakkei", "custom_page", getPostName(val)+".html")
+		filename := filepath.Join(util.GetAbsPath(), "hyakkei", getPostName(val)+".html")
 		if err := os.Remove(filename); err != nil {
 			logger.Warnf("[%s]删除失败: %s", filename, err.Error())
 			return

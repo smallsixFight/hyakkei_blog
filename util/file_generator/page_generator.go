@@ -22,16 +22,16 @@ func GenerateBasePage(src, dest, pageName string) error {
 	if err != nil {
 		return fmt.Errorf("读取 %s 模版文件数据失败: %s", pageName, err.Error())
 	}
-	str := ReplaceBasePath(template)
+	str := ReplaceBasePath(template, "")
 	return util.WriteFile([]byte(str), filepath.Join(dest, pageName))
 }
 
-func ReplaceBasePath(d []byte) string {
+func ReplaceBasePath(d []byte, preDir string) string {
 	str := string(d)
-	str = strings.ReplaceAll(str, "#{{img_path}}", util.GetInitConfig().ImgPath)
-	str = strings.ReplaceAll(str, "#{{js_path}}", util.GetInitConfig().JsPath)
-	str = strings.ReplaceAll(str, "#{{css_path}}", util.GetInitConfig().CssPath)
-	str = strings.ReplaceAll(str, "#{{font_path}}", util.GetInitConfig().FontPath)
+	str = strings.ReplaceAll(str, "#{{img_path}}", filepath.Join(preDir, util.GetInitConfig().ImgPath))
+	str = strings.ReplaceAll(str, "#{{js_path}}", filepath.Join(preDir, util.GetInitConfig().JsPath))
+	str = strings.ReplaceAll(str, "#{{css_path}}", filepath.Join(preDir, util.GetInitConfig().CssPath))
+	str = strings.ReplaceAll(str, "#{{font_path}}", filepath.Join(preDir, util.GetInitConfig().FontPath))
 	str = strings.Replace(str, "#{{github_name}}", service.GetSysConfig().GithubName, 1)
 	str = strings.Replace(str, "#{{blog_name}}", service.GetSysConfig().BlogName, 1)
 	str = strings.Replace(str, "#{{pswp}}", pswpStr, 1)
@@ -62,7 +62,7 @@ func GenerateArticlePage(article *model.Post) error {
 		logger.Error("获取模板失败: ", err.Error())
 		return errors.New("获取模板失败: " + err.Error())
 	}
-	str := ReplaceBasePath(template)
+	str := ReplaceBasePath(template, "")
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("<article><h1>%s</h1><div class=\"post-desc\"><time>%s</time>", article.Title, article.CreateAt))
 	for i := range article.Tags {
@@ -83,13 +83,13 @@ func GenerateCustomPage(post *model.Post) error {
 		logger.Error("获取模板失败: ", err.Error())
 		return errors.New("获取模板失败: " + err.Error())
 	}
-	str := ReplaceBasePath(template)
+	str := ReplaceBasePath(template, "..")
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("<article><h1>%s</h1><div class=\"post-desc\">", post.Title))
 	sb.WriteString(fmt.Sprintf("</div><div class=\"pswp-gallery\">%s</div></article>", post.HtmlText))
 	str = strings.Replace(str, "#{{page_content}}", sb.String(), 1)
 
-	return util.WriteFile([]byte(str), filepath.Join(service.GetSysConfig().SavePath, "hyakkei", "custom_page", post.Slug+".html"))
+	return util.WriteFile([]byte(str), filepath.Join(service.GetSysConfig().SavePath, "hyakkei", post.Slug+".html"))
 }
 
 func getTemplate(path string) (result []byte, err error) {
@@ -107,7 +107,7 @@ func GenerateHeaderFile() error {
 	if err != nil {
 		return errors.New("读取 header 模版文件数据失败: " + err.Error())
 	}
-	str := ReplaceBasePath(template)
+	str := ReplaceBasePath(template, "")
 	cfg := service.GetSysConfig()
 	// 是否展示 github 链接
 	githubStr := ""
@@ -118,7 +118,7 @@ func GenerateHeaderFile() error {
 	// 是否展示图书页面链接
 	bookStr := ""
 	if cfg.IsShowBook {
-		bookStr = `<li><a href="books.html" target="_blank">Read</a></li>`
+		bookStr = `<li><a href="books.html" target="_parent">Read</a></li>`
 	}
 	str = strings.Replace(str, "#{{book_page}}", bookStr, 1)
 	str = strings.Replace(str, "#{{logo_filename}}", cfg.LogoName, 1)
@@ -132,7 +132,7 @@ func GenerateHeaderFile() error {
 	sb := strings.Builder{}
 	for i := range list {
 		if list[i].Status == model.Publish && list[i].Slug != "" {
-			sb.WriteString(fmt.Sprintf(`<li><a href="%s.html" target="_parent">%s</a></li>`, filepath.Join("custom_page", list[i].Slug), list[i].Slug))
+			sb.WriteString(fmt.Sprintf(`<li><a href="%s.html" target="_parent">%s</a></li>`, list[i].Slug, list[i].Slug))
 		}
 	}
 	str = strings.Replace(str, "#{{custom_page}}", sb.String(), 1)
