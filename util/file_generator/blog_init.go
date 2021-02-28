@@ -2,6 +2,7 @@ package file_generator
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/smallsixFight/hyakkei_blog/model"
 	"github.com/smallsixFight/hyakkei_blog/service"
@@ -87,6 +88,12 @@ func GenerateBlogFile() error {
 }
 
 func GenerateBlogConfig(sysCfg *model.SysSetting) error {
+	cfgPath := util.GetBlogConfigPath()
+	if !util.FileIsExist(cfgPath) {
+		if err := os.MkdirAll(cfgPath, os.ModePerm); err != nil {
+			return errors.New("创建配置文件目录失败，" + err.Error())
+		}
+	}
 	if err := util.SaveInitConfig(&util.InitConfig{
 		JsPath:   "assets/js",
 		ImgPath:  "assets/img",

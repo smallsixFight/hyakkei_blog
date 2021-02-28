@@ -54,6 +54,11 @@ func CopyDir(src, dest string) error {
 	} else if !srcInfo.IsDir() {
 		return errors.New("源路径不是一个文件夹")
 	}
+	if !FileIsExist(dest) {
+		if err := os.MkdirAll(dest, os.ModePerm); err != nil {
+			return errors.New("创建目标文件失败，" + err.Error())
+		}
+	}
 	if srcInfo, err := os.Stat(dest); err != nil {
 		return errors.New("目标路径错误：" + err.Error())
 	} else if !srcInfo.IsDir() {
