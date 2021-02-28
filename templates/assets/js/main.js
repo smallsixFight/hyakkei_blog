@@ -1,4 +1,4 @@
-const REQUEST_URL = "http://127.0.0.1:9900";
+const REQUEST_URL = window.location.origin;
 
 // 路由
 const api = {
