@@ -13,7 +13,7 @@ import (
 )
 
 var install = flag.Bool("install", false, "true|false")
-var mode = flag.String("mode", "debug", "release|debug")
+var mode = flag.String("mode", "release", "release|debug")
 var port = flag.Int("listen_port", 9900, "1024-65535")
 
 func main() {
