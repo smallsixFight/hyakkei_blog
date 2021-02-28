@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/smallsixFight/hyakkei_blog/logger"
 	"github.com/smallsixFight/hyakkei_blog/model"
 	"github.com/smallsixFight/hyakkei_blog/service"
 	"github.com/smallsixFight/hyakkei_blog/util"
@@ -176,11 +177,21 @@ func setSysConfig() *model.SysSetting {
 		}
 		if cfg.SavePath == "" {
 			v := strings.TrimSpace(getInput("文件存储路径(default: 当前路径)"))
-			if v != "" && !util.IsDir(v) && !filepath.IsAbs(v) {
-				fmt.Println("请输入正确的路径（需绝对路径）")
-				continue
+			if v != "" {
+				if !util.IsDir(v) && !filepath.IsAbs(v) {
+					fmt.Println("请输入正确的路径（需绝对路径）")
+					continue
+				}
+				if !util.FileIsExist(v) {
+					if err := os.MkdirAll(v, os.ModePerm); err != nil {
+						logger.Fatal("创建保存路径失败，" + err.Error())
+						return nil
+					}
+				}
+				cfg.SavePath = v
+			} else {
+				cfg.SavePath = util.GetAbsPath()
 			}
-			cfg.SavePath = util.GetAbsPath()
 		}
 		break
 	}
