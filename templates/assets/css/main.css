@@ -160,6 +160,11 @@ a:hover {
     text-align: start;
 }
 
+.post-content ul li {
+    line-height: 1.62;
+    letter-spacing: 0.05rem;
+}
+
 .post-content p {
     line-height: 1.62;
     letter-spacing: 0.05rem;
@@ -959,7 +964,7 @@ textarea:focus {
 
 .select input:hover {
     border-color: #8b8b8b;
-    ;
+;
 }
 
 .select ul {
