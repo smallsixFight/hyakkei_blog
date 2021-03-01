@@ -31,7 +31,7 @@ hyakkei 是一个基于 Golang 构建的博客系统，使用 markdown 作为书
 关于 hyakkei 这个词的由来，这个词应该是`百景`的日文的罗马音，而百景这个词取自歌曲`笑颜百景`，我很喜欢这首歌。
 
 ### 示例
-[markdown_demo](./web_demo/markdown_demo.md) 是 hyakkei 支持的标签示例，实际效果为 [hyakkei 博客模板示例](https://blog.lamlake.com/hyakkei-blog-example.html) 。
+[markdown_demo](markdown_demo.md) 是 hyakkei 支持的标签示例，实际效果为 [hyakkei 博客模板示例](https://blog.lamlake.com/hyakkei-blog-example.html) 。
 
 ### 目标与功能
 - [x] 为文章和自定义页生成 `.html` 静态文件；
