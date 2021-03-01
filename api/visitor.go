@@ -23,6 +23,12 @@ func FetchArticleList(ctx *gin.Context) {
 	}
 	list := make([]model.BasePostInfo, 0)
 	_ = json.Unmarshal(bs, &list)
+	low, high := 0, len(list)-1
+	for low < high {
+		list[low], list[high] = list[high], list[low]
+		low++
+		high--
+	}
 	total := 0
 	addCount := 0
 	skip := (page - 1) * 10

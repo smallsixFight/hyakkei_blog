@@ -28,11 +28,17 @@ func GetPageList(ctx *gin.Context) {
 		return
 	}
 	data := make([]model.BasePostInfo, 0)
-	reply.SetData(data)
+	reply.SetData(&data)
 	if err := json.Unmarshal(list, &data); err != nil {
 		logger.Println(err.Error())
 		reply.SetMessage("解析自定义页面数据失败")
 		return
+	}
+	low, high := 0, len(data)-1
+	for low < high {
+		data[low], data[high] = data[high], data[low]
+		low++
+		high--
 	}
 	if (page-1)*10 < len(data) {
 		last := page * 10
