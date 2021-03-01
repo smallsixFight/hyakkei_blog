@@ -34,7 +34,7 @@ func main() {
 		log.Fatal("设置初始化缓存数据失败: " + err.Error())
 	}
 	ticker.RunTickerTask()
-	fmt.Println("初始化成功，尝试启动服务...")
+	fmt.Println("初始化成功，启动服务...")
 	// 启动服务
 	gin.SetMode(*mode)
 	engine := gin.Default()
