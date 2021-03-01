@@ -20,7 +20,7 @@ func VisitorAdd(ctx *gin.Context) {
 	reply := model.Reply{}
 	defer ctx.JSON(http.StatusOK, &reply)
 	ip := ctx.ClientIP()
-	if ctx.GetHeader("token") != "" && !util.Cache.GetBool("visitor_"+ip) {
+	if ctx.GetHeader("token") == "" && !util.Cache.GetBool("visitor_"+ip) {
 		util.Cache.Set("visitor_"+ip, true, time.Minute*5)
 		util.Cache.Set(model.VisitorCount, util.Cache.GetInt32(model.VisitorCount)+1, 0)
 	}
