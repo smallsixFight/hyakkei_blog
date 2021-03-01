@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/smallsixFight/hyakkei_blog/logger"
+	"github.com/smallsixFight/hyakkei_blog/middleware"
 	"github.com/smallsixFight/hyakkei_blog/model"
 	"github.com/smallsixFight/hyakkei_blog/service"
 	"github.com/smallsixFight/hyakkei_blog/util"
@@ -61,7 +62,7 @@ func VerifyLoginInfo(param *loginParam) (token string, err error) {
 	// 生成 token
 	claims := make(map[string]interface{})
 	claims["username"] = param.Username
-	token, err = util.CreateToken(claims, time.Hour*6)
+	token, err = middleware.CreateToken(claims, time.Hour*6)
 	if err != nil {
 		return
 	}

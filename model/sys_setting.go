@@ -4,6 +4,7 @@ type BaseSysSetting struct {
 	BlogName     string `json:"blog_name"`
 	Username     string `json:"username"`
 	Password     string `json:"password,omitempty"`
+	TokenSecret  string `json:"token_secret"`
 	GithubName   string `json:"github_name"`
 	IsShowGithub bool   `json:"is_show_github"`
 	IsShowBook   bool   `json:"is_show_book"`

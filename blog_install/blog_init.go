@@ -163,6 +163,14 @@ func setSysConfig() *model.SysSetting {
 			}
 			cfg.Salt = v
 		}
+		if cfg.TokenSecret == "" {
+			v := strings.TrimSpace(getInput("token secret"))
+			if v == "" {
+				fmt.Println("token secret 必须设置")
+				continue
+			}
+			cfg.TokenSecret = v
+		}
 		showGithub := strings.ToLower(strings.TrimSpace(getInput("是否显示 Github 链接(y/n, default: y)")))
 		if showGithub != "n" {
 			cfg.IsShowGithub = true

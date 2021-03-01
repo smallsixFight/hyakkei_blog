@@ -4,9 +4,10 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/smallsixFight/hyakkei_blog/model"
-	"github.com/smallsixFight/hyakkei_blog/util"
+	"github.com/smallsixFight/hyakkei_blog/service"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func JWTVerify(c *gin.Context) {
@@ -17,7 +18,7 @@ func JWTVerify(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	jwtToken, err := util.ParseToken(token)
+	jwtToken, err := parseToken(token)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, &reply)
 		c.Abort()
@@ -38,4 +39,30 @@ func JWTVerify(c *gin.Context) {
 	c.Set("user_id", customMap["user_id"])
 	c.Set("username", customMap["username"])
 	c.Next()
+}
+
+type MyCustomClaims struct {
+	jwt.StandardClaims
+	CustomParams map[string]interface{} `json:"custom_params"`
+}
+
+func CreateToken(customClaims map[string]interface{}, expired time.Duration) (token string, err error) {
+	claims := MyCustomClaims{
+		jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "hyakkeiBlog",
+			Subject:   "admin",
+			Audience:  "",
+			ExpiresAt: time.Now().Add(expired).Unix(),
+		},
+		customClaims,
+	}
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return t.SignedString([]byte(service.GetSysConfig().TokenSecret))
+}
+
+func parseToken(token string) (*jwt.Token, error) {
+	return jwt.Parse(token, func(token *jwt.Token) (key interface{}, err error) {
+		return []byte(service.GetSysConfig().TokenSecret), nil
+	})
 }

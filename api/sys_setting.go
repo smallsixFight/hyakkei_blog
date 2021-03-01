@@ -15,6 +15,8 @@ func GetSysSettingInfo(ctx *gin.Context) {
 	cfg := service.GetSysConfig()
 	cfg.Password = ""
 	cfg.Salt = ""
+	cfg.TokenSecret = ""
+	cfg.SavePath = ""
 	reply.SetSuccess(true).SetData(&cfg).SetMessage("ok")
 }
 
