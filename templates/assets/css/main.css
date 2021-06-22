@@ -64,9 +64,9 @@ a:hover {
     height: 300px;
 }
 
-/* .footer-iframe {
-    height: 40px;
-} */
+.footer-iframe {
+    height: 70px;
+}
 
 .header .site-title {
     font-weight: bold;
@@ -120,6 +120,17 @@ a:hover {
     font-size: 14px;
     text-align: center;
     color: #909090;
+}
+
+.footer .upyun a {
+    font-size: 16px;
+    color: #909090;
+}
+
+.footer .upyun img {
+    height: 24px;
+    margin-right: 5px;
+    vertical-align: top;
 }
 
 .post-desc {
@@ -494,7 +505,6 @@ textarea:focus {
     height: 36px;
     color: #fff;
     background-color: #39c5bb;
-    border-color: #39c5bb;
     transition: .4s;
     font-weight: bold;
     padding: 0 24px;
@@ -950,12 +960,11 @@ textarea:focus {
 .select input {
     padding: 4px 14px;
     font-size: 14px;
-    height: 36px;
+    height: 34px;
     width: inherit;
     box-sizing: border-box;
     /* 限制 input 宽度 */
     cursor: pointer;
-    height: 34px;
     border: 1px solid #b6b6b6;
     border-radius: 3px;
     transition: .4s;

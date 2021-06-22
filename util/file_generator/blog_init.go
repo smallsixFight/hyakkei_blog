@@ -13,7 +13,7 @@ import (
 
 var (
 	BlogPagePath   = filepath.Join(util.GetBlogTemplatePath(), "blog_pages")
-	BlogFileList   = []string{"index.html", "post.html", "page.html", "friends.html", "books.html", "header.html"}
+	BlogFileList   = []string{"index.html", "post.html", "page.html", "friends.html", "books.html", "header.html", "footer.html"}
 	BlogBSPagePath = filepath.Join(util.GetBlogTemplatePath(), "backstage_pages")
 	BlogBsFileList = []string{"articles.html", "articles_edit.html", "friends.html", "login.html", "books.html",
 		"pages.html", "pages_edit.html", "preview.html", "setting.html", "tags.html", "dashboard.html"}
@@ -35,6 +35,9 @@ func GenerateBlogFile() error {
 		return err
 	}
 	if err := GenerateHeaderFile(); err != nil {
+		return err
+	}
+	if err := GenerateFooterFile(); err != nil {
 		return err
 	}
 	// 创建文章页

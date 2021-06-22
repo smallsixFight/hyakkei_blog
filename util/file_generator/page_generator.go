@@ -86,7 +86,7 @@ func GenerateCustomPage(post *model.Post) error {
 	str := ReplaceBasePath(template, "..")
 	sb := strings.Builder{}
 	sb.WriteString(fmt.Sprintf("<article><h1>%s</h1><div class=\"post-desc\">", post.Title))
-	sb.WriteString(fmt.Sprintf("</div><div class=\"pswp-gallery\">%s</div></article>", post.HtmlText))
+	sb.WriteString(fmt.Sprintf("</div><div class=\"post-content pswp-gallery\">%s</div></article>", post.HtmlText))
 	str = strings.Replace(str, "#{{page_content}}", sb.String(), 1)
 
 	return util.WriteFile([]byte(str), filepath.Join(service.GetSysConfig().SavePath, "hyakkei", post.Slug+".html"))
@@ -137,6 +137,16 @@ func GenerateHeaderFile() error {
 	}
 	str = strings.Replace(str, "#{{custom_page}}", sb.String(), 1)
 	return util.WriteFile([]byte(str), filepath.Join(cfg.SavePath, "hyakkei", "header.html"))
+}
+
+// 生成 Footer 文件
+func GenerateFooterFile() error {
+	template, err := getTemplate(filepath.Join(util.GetBlogTemplatePath(), "blog_pages", "footer.html"))
+	if err != nil {
+		return errors.New("读取 footer 模版文件数据失败: " + err.Error())
+	}
+	cfg := service.GetSysConfig()
+	return util.WriteFile([]byte(template), filepath.Join(cfg.SavePath, "hyakkei", "footer.html"))
 }
 
 const pswpStr = `<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
